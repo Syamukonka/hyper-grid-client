@@ -21,7 +21,7 @@ export const LoginForm = () => {
     const onSubmit = (e)=>{
         dispatch(SignIn(form,
             ()=>{
-            navigate("/home");
+                navigate("/home");
             },
             (message)=>{
                 alert(message)

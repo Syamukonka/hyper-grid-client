@@ -25,4 +25,4 @@ export const updateCustomer = (data) => Axios.put("customers",data);
 //Transactions
 export const fetchTransactions = () => Axios.get("transactions");
 export const fetchTransactionsForId = (id) => Axios.get("transactions/"+id);
-export const makePayment = (data) => Axios.get("transactions",data);
+export const makePayment = (data) => Axios.post("transactions/pay",data);

@@ -10,11 +10,14 @@ export const SignIn = (form, onSuccess, onFailure) => async (dispatch) => {
                 type: SIGN_IN,
                 payload: data}
             )
+            //Execute the onSuccess sequence
+            onSuccess()
         }//failed to log in
-        else
+        else//Show failure via the onFailure sequence
             onFailure("No data found");
     }catch(error){
         console.log(error)
-        onFailure(error.response?.data?.message)
+        //execute the onFailure sequence, pass the axios error
+        onFailure(error?.message)
     }
 }
