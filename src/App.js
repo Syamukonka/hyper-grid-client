@@ -13,6 +13,7 @@ function App() {
         <Route path="/home" element ={<Home/>} />
         <Route path="/customer/:id" element ={<View/>} />
         <Route path="/customer/new" element ={<AddCustomer/>} />
+        <Route path="/customer/edit/:id" element ={<AddCustomer/>} />
       </Routes>
     </BrowserRouter>
   );

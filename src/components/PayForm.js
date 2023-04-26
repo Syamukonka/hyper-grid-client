@@ -15,7 +15,8 @@ const PayForm = (props) => {
     const dispatch = useDispatch();
     const onFormChanged = (e) => {
         const value = e.target.value
-        setForm(value);
+
+        setForm(value.replaceAll("-",""));
         setUnits(value/rate);
     }
 
@@ -31,6 +32,7 @@ const PayForm = (props) => {
                 ()=>{
                     setForm("")
                     setUnits(0)
+                    customer.units+=units;
                     dispatch(fetchCustomers())
                 },
                 (message)=>{
@@ -53,7 +55,7 @@ const PayForm = (props) => {
             <div>
                 <div className="mb-3">
                     <label htmlFor="amount" className="form-label">Amount</label>
-                    <input name="amount" value={form} className="form-control" id="amount" type="number"
+                    <input name="amount" value={form} min={0} max={100_000} className="form-control" id="amount" type="number"
                            onChange={onFormChanged}/>
                 </div>
                 <div className="row_between items_center">

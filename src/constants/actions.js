@@ -6,6 +6,7 @@ export const SIGN_IN = "sign_in";
 export const FETCH_TXN = "fetch_customer_transactions";
 export const MAKE_TXN = "make_transaction";
 export const FETCH_ALL_TXN = "fetch_all_transactions";
+export const FETCH_STATS = "fetch_stats";
 
 
 //CUSTOMER AND TYPES

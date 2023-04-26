@@ -1,4 +1,4 @@
-import {FETCH_ALL_TXN, FETCH_TXN, MAKE_TXN} from "../constants/actions";
+import {FETCH_ALL_TXN, FETCH_STATS, FETCH_TXN, MAKE_TXN} from "../constants/actions";
 
 export default (data=[],action) => {
     switch (action.type){
@@ -18,6 +18,15 @@ export const oneCustomerTxn = (data=[],action) => {
         case MAKE_TXN:
             return [...data,action.payload];
         default:
+            return data;
+    }
+}
+
+export const stats = (data=[], action)=>{
+    switch (action.type){
+        case FETCH_STATS:
+            return action.payload;
+        default :
             return data;
     }
 }

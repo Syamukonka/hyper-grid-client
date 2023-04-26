@@ -1,5 +1,5 @@
-import {FETCH_TXN, MAKE_TXN} from "../constants/actions";
-import {fetchTransactions, fetchTransactionsForId, makePayment} from "../api";
+import {FETCH_STATS, FETCH_TXN, MAKE_TXN} from "../constants/actions";
+import {fetchTransactions, fetchTransactionsForId, getStats, makePayment} from "../api";
 
 export const MakePayment = (form, onSuccess, onFailure) => async (dispatch) => {
     try{
@@ -45,6 +45,22 @@ export const FetchTransactions = () => async (dispatch) => {
                 payload: data}
             )
 
+        }
+    }catch(error){
+        console.log(error)
+        //onFailure(error.response?.data?.message)
+    }
+}
+
+export const FetchStats = () => async (dispatch) => {
+    try{
+        const {data} = await getStats()
+        console.log("RECIEVED:\n", data)
+        if(data){
+            dispatch({
+                type: FETCH_STATS,
+                payload: data}
+            )
         }
     }catch(error){
         console.log(error)

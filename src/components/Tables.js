@@ -4,7 +4,7 @@ import {useDispatch, useSelector} from "react-redux";
 import FetchCustomers, {DeleteCustomer} from "../actions/customer";
 import {FetchTransactions, FetchTransactionsForId} from "../actions/transaction";
 
-export const CustomerTable = () => {
+export const CustomerTable = (props) => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
@@ -13,6 +13,7 @@ export const CustomerTable = () => {
     },[navigate,dispatch])
     const customers = useSelector(state => state.customer);
 
+    const {term} = props;
     return (
         <div>
         <div className="container-lg pd_h_md mg_v_lg">
@@ -28,8 +29,24 @@ export const CustomerTable = () => {
                 </thead>
                 <tbody>
                 {
-                    customers!=null &&
+                    customers!=null && !term ?
                     customers.map((customer,id)=>{
+                        return <TableRow key={id} customer={customer} num={id}  />
+                    })
+                    :
+                    customers.filter(customer =>
+                        (
+                            customer.name
+                                .toLowerCase()
+                                .search(term)>-1
+                            ||
+                            customer.id===parseInt(term)
+                        )
+                        ||
+                        customer.type.toLowerCase()
+                            .indexOf(term)===0
+                    )
+                    .map((customer,id)=>{
                         return <TableRow key={id} customer={customer} num={id}  />
                     })
                 }
@@ -53,7 +70,6 @@ const TableRow = (props) => {
     const onDeleteClick = (id) => {
         dispatch(DeleteCustomer(id,
             ()=>{
-                alert("Deleted Successfully")
             },
             (error)=>{
                 alert(error)
@@ -84,7 +100,7 @@ const TableRow = (props) => {
             </td>
             <td className="">
                 <div className="row_right no_wrap shower_child items_center">
-                    <button className="btn" onClick={()=>onRowClick(customer.id)}><i className="fa-solid fa-ellipsis-vertical"></i></button>
+                    <button className="btn shake_once_hover" onClick={()=>onRowClick(customer.id)}><i className="fa-solid fa-solid fa-arrow-up-right-from-square"></i></button>
 
                     <button className="btn shake_once_child" onClick={()=>onDeleteClick(customer.id)}><i className="fa-solid fa-trash text-danger"></i></button>
 
@@ -114,7 +130,7 @@ export const TransactionsTable = (props) => {
     return (
 
             <div className="pd_h_md">
-                <h4 className="mg_v_md">{mode==="personal"?"Your recent":"Customer"} transactions</h4>
+                <h5 className="mg_v_md">Recent transactions</h5>
                 <table className="table ">
                     <thead>
                     <tr>

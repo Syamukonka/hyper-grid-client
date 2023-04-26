@@ -1,21 +1,24 @@
-import React, { useEffect } from "react";
+import React, {useEffect, useState} from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import FetchCustomers from "../actions/customer";
 import {StatsCard} from "../components/StatsCard";
 import {CustomerTable} from "../components/Tables";
 import ActionsRow from "../components/ActionsRow";
+import {FetchStats} from "../actions/transaction";
 
 export default function Home(){
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const user = JSON.parse(localStorage.getItem("admin"));
-    
+    const [term, setTerm] = useState("");
     useEffect(()=>{
         dispatch(FetchCustomers())
+        dispatch(FetchStats())
     },[navigate,dispatch])
     const customers = useSelector(state => state.customer);
+    const stats = useSelector(state => state.stats);
 
     return <div>
         <div className="container-lg pd_v_sm border-bottom-white">
@@ -50,20 +53,27 @@ export default function Home(){
                 <div className="col-6 col-sm-3 ">
                     <StatsCard value={customers.length} caption={"CUSTOMERS"}  info={"All registered customers"} infoIcon={"fa-people-group"}/>
                 </div>
-                <div className="col-6 col-sm-3 ">
-                    <StatsCard value={"23,000"} caption={"POWER SUPPLIED"} suffix={"KWH"} info={"From the past 30 days"} infoIcon={"fa-clock"}/>
-                </div>
-                <div className="col-6 col-sm-3">
-                    <StatsCard value={"430,000"} caption={"REVENUE"} prefix={"Rs."} info={"From the past 30 days"} infoIcon={"fa-clock"} />
-                </div>
+                {
+                    stats!=null &&
+                    stats.map((stat,id)=>{
+                        return <div key={id} className="col-6 col-sm-3 ">
+                            <StatsCard value={stat.value}
+                                       caption={stat.caption}
+                                       prefix={stat.prefix}
+                                       suffix={stat.suffix}
+                                       acc={2}
+                                       info={stat.info} infoIcon={"fa-clock"}/>
+                        </div>
+                    })
+                }
             </div>
         </div>
 
         <div className="bg_light1">
 
             <div className="container-lg pd_h_md pd_v_lg mg_t_lg">
-                <ActionsRow/>
-                <CustomerTable />
+                <ActionsRow setSearchTerm={setTerm}/>
+                <CustomerTable term={term.toLowerCase()} />
             </div>
         </div>
     </div>

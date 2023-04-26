@@ -1,4 +1,4 @@
-import {addCustomer, deleteCustomer, fetchCustomers, getCustomer} from "../api"
+import {addCustomer, deleteCustomer, fetchCustomers, getCustomer, updateCustomer} from "../api"
 import {ADD_CUSTOMER, DELETE_CUSTOMER, FETCH_CUSTOMERS, GET_CUSTOMER} from "../constants/actions"
 
 export const FetchCustomers = () => async (dispatch) => {
@@ -18,7 +18,7 @@ export const FetchCustomers = () => async (dispatch) => {
     }
 }
 
-export const FetchCustomerById = (id) => async (dispatch) => {
+export const FetchCustomerById = (id, onSuccess, onFailure) => async (dispatch) => {
     try{
         const {data} = await getCustomer(id)
         console.log("RECIEVED:\n", data)
@@ -27,11 +27,10 @@ export const FetchCustomerById = (id) => async (dispatch) => {
                 type: GET_CUSTOMER,
                 payload: data}
             )
-
         }
     }catch(error){
         console.log(error)
-        //onFailure(error.response?.data?.message)
+        onFailure(error.response?.data?.message)
     }
 }
 
@@ -52,7 +51,25 @@ export const AddNewCustomer = (form, onSuccess, onFailure) => async (dispatch) =
         onFailure(error?.message)
     }
 }
-export const DeleteCustomer = (id) => async (dispatch) => {
+
+export const UpdateCustomer = (form, onSuccess, onFailure) => async (dispatch) => {
+    try{
+        const {data} = await updateCustomer(form);
+        console.log("RECIEVED:\n", data)
+        if(data){
+            dispatch({
+                type: ADD_CUSTOMER,
+                payload: data}
+            )
+            onSuccess(data);
+        }
+        else onFailure("Failed to update the customer");
+    }catch(error){
+        console.log(error)
+        onFailure(error?.message)
+    }
+}
+export const DeleteCustomer = (id, onSuccess, onFailure) => async (dispatch) => {
     try{
         const {data} = await deleteCustomer(id)
         console.log("RECIEVED:\n", data)
@@ -61,11 +78,13 @@ export const DeleteCustomer = (id) => async (dispatch) => {
                 type: DELETE_CUSTOMER,
                 payload: {id}}
             )
-
+            onSuccess()
+        }else{
+            onFailure("Deleting failed")
         }
     }catch(error){
         console.log(error)
-        //onFailure(error.response?.data?.message)
+        onFailure(error?.response?.data?.message)
     }
 }
 export default FetchCustomers;

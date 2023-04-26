@@ -1,14 +1,23 @@
 import React, {useState} from "react";
 import {useDispatch} from "react-redux";
-import {useNavigate} from "react-router-dom";
-import {AddNewCustomer} from "../actions/customer";
+import {useNavigate, useParams} from "react-router-dom";
+import {AddNewCustomer, FetchCustomerById, UpdateCustomer} from "../actions/customer";
+import Banner from "../components/Banner";
 
 const AddCustomer = ()=>{
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
+    const {id} = useParams();
+    let customer;
+    if(id){
+        dispatch(FetchCustomerById(id))
+        customer = JSON.parse(localStorage.getItem("editable"))
+    }
     const defaultForm = {name:"",address:"",type:"Domestic"};
-    const [form,setForm] = useState(defaultForm);
+
+    const [form,setForm] = useState(customer||defaultForm);
     let [error, setError] = useState("");
     let [success, setSuccess] = useState("");
 
@@ -16,27 +25,42 @@ const AddCustomer = ()=>{
         const value = e.target.value;
         const field = e.target.name;
 
+        setError("")
+        setSuccess("")
         setForm({...form,[field]:value})
 
     }
     const onSubmit = (e) => {
         e.preventDefault();
-        dispatch(AddNewCustomer(form,
-            (data)=>{
-                setSuccess("Successfully added "+data.name);
-                setForm(defaultForm)
-            },
-            (message)=>{
-                setError(message);
-            }))
-
+        if(!customer)
+            dispatch(AddNewCustomer(form,
+                (data)=>{
+                    setSuccess("Successfully added "+data.name);
+                    setForm(defaultForm)
+                },
+                (message)=>{
+                    setError(message);
+                }))
+        else{
+            dispatch(UpdateCustomer(form,
+                ()=>{
+                    alert("Successful");
+                    navigate(-1);
+                },
+                (message)=>{
+                    alert(message)
+                }))
+        }
     }
+
+
 
     return (
         <div className="container">
+            <Banner action={()=> navigate(-1)} actionText={"Back Home"} />
             <div className=" pd_sm col_center w100 mg_v_lg">
                 <div className="w_100 max_500 rounded-1 items_center shadow">
-                    <h3 className="text_center mg_t_md mg_h_md">Add a new Customer</h3>
+                    <h3 className="text_center mg_t_md mg_h_md">{customer ? "Edit "+customer.name : "Add a new Customer"}</h3>
                     <hr className="mg_b_0"/>
                     {
                         error &&
@@ -54,17 +78,17 @@ const AddCustomer = ()=>{
                     <form className="w100 pd_md">
                         <div className="mb-3">
                             <label htmlFor="name" className="form-label">Name</label>
-                            <input name="name" value={form.name} required onChange={onFormChanged} className="form-control" id="name" type="text"
+                            <input name="name" value={form?.name} required onChange={onFormChanged} className="form-control" id="name" type="text"
                                    placeholder="Customer's full name"/>
                         </div>
                         <div className="mb-3">
                             <label htmlFor="address" className="form-label">Address</label>
-                            <input name="address" value={form.address} required onChange={onFormChanged} type="text" className="form-control" id="address"
+                            <input name="address" value={form?.address} required onChange={onFormChanged} type="text" className="form-control" id="address"
                                    placeholder="Home address of the customer"/>
                         </div>
                         <label className="form-label">Customer category</label>
                         <div className="mb-3 form-floating">
-                            <select value={form.type} onChange={onFormChanged} className="form-select" id="floatingSelect" name="type"
+                            <select value={form?.type} onChange={onFormChanged} className="form-select" id="floatingSelect" name="type"
                                     aria-label="Floating label select example">
                                 <option value="Domestic">Domestic</option>
                                 <option value="Commercial">Commercial</option>
@@ -73,7 +97,7 @@ const AddCustomer = ()=>{
                             <label htmlFor="floatingSelect">This customer is </label>
                         </div>
                         <div className="row_right">
-                            <button type="submit" onClick={onSubmit} className="btn btn-success bg_cool_green">Add {success ? "another customer" : "new customer"}
+                            <button type="submit" onClick={onSubmit} className="btn btn-success bg_cool_green">{(customer ? "Update Customer" : "Add "+(success ? "another customer" : "new customer"))}
                             </button>
                         </div>
                     </form>
