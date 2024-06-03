@@ -13,7 +13,6 @@ const ActionsRow = (props) => {
 
     return (
         <div className="row_between w100">
-
             <button onClick={()=>navigate("/customer/new")} className="btn btn-success bg_cool_green mg_r_sm ">
                 New customer
             </button>
